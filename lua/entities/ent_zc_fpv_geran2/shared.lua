@@ -1,0 +1,27 @@
+ENT.Type = "anim"
+ENT.Base = "ent_zc_fpv_fixedwing"
+ENT.PrintName = "Geran-2"
+ENT.Category = "ZCity FPV"
+ENT.Spawnable = true
+ENT.AdminOnly = false
+ENT.ZCFpvDrone = true
+ENT.FixedWing = true
+ENT.Strike = true
+ENT.CatapultLaunchable = true
+ENT.CatapultPos = 5
+ENT.IconOverride = "entities/sw_geran2.png"
+
+ENT.DroneModel = "models/sw/avia/geran2/geran2.mdl"
+ENT.IdleSound = "sw/geran2/geran_idle.wav"
+ENT.MaxHP = 250
+ENT.MaxVel = 2625
+ENT.Mass = 500
+ENT.Thrust = 500
+ENT.TurnRate = 125
+ENT.StallSpeed = 650
+ENT.EngineForce = 180000
+ENT.MaxBank = 65
+ENT.SteeringPower = 1.35
+ENT.HardSpeedLimit = true
+ENT.SignalRangeMul = 4
+ENT.CollideDetonate = 120

@@ -10,7 +10,6 @@
 
 </div>
 
----
 ## License
 
 This project is open-source and shared under the **GNU AGPL-3** license. Head over to the [License](LICENSE) file for more information.

@@ -27,7 +27,7 @@ function CurrentRound()
 		return zb.modes["coop"]
 	end
 
-	zb.CROUND = zb.CROUND or "hmcd"
+	zb.CROUND = zb.CROUND or "sandbox"
 	if not zb.CROUND_MAIN or (zb.LASTCROUND != zb.CROUND) then
 		zb.CROUND_MAIN = zb:GetMode(zb.CROUND)
 		zb.LASTCROUND = zb.CROUND
@@ -47,18 +47,12 @@ function NextRound(round)
 end
 
 function zb:PreRound()
-	if ((((zb.Roundscount or 0) > 15) and !GetConVar("zb_dev"):GetBool()) or ( (player.GetCount() > 1) and zb.ROUND_STATE == 0 and zb.CheckRTVVotes() )) and !(zb.RoundsLeft and zb.CROUND == "cstrike") then
-		zb.StartRTV(20)
-		zb.ROUND_STATE = 0
-		return
-	end
-
-	if zb.ROUND_STATE == 0 and #player_GetAll() > 1 then
-		zb.END_TIME = nil
-
-		zb.START_TIME = zb.START_TIME or CurTime() + (CurrentRound().start_time or 5)
-		if zb.START_TIME < CurTime() then zb:RoundStart() end
-	end
+	zb.START_TIME = nil
+	zb.END_TIME = nil
+	zb.ROUND_STATE = 0
+	zb.nextround = "sandbox"
+	zb.CROUND = "sandbox"
+	zb.CROUND_MAIN = "sandbox"
 end
 
 function zb:RoundThink()
@@ -78,7 +72,7 @@ function zb:EndRound()
 	local mode, round = CurrentRound()
 
 	net.Start("RoundInfo")
-		net.WriteString(mode.name or "hmcd")
+		net.WriteString(mode.name or "sandbox")
 		net.WriteInt(zb.ROUND_STATE, 4)
 	net.Broadcast()
 
@@ -156,14 +150,14 @@ function zb:EndRoundThink()
 			hook.Run("ZB_PreRoundStart")
 			hook.Run("TTTPrepareRound") -- stormfox2 random_round_weather
 
-			zb.CROUND = zb.nextround or "hmcd"
+			zb.CROUND = zb.nextround or "sandbox"
 			if CurrentRound().shouldfreeze then zb:Freeze() end
 
 			--PrintMessage(HUD_PRINTTALK, "Gamemode: " .. CurrentRound().PrintName or "None")
 
 			local mode, round = CurrentRound()
 			net.Start("RoundInfo")
-				net.WriteString(mode.name or "hmcd")
+				net.WriteString(mode.name or "sandbox")
 				net.WriteInt(zb.ROUND_STATE, 4)
 			net.Broadcast()
 
@@ -190,7 +184,7 @@ hook.Add("PlayerInitialSpawn", "zb_SendRoundInfo", function(ply)
 	if zb.CROUND then
 		local mode,round = CurrentRound()
 		net.Start("RoundInfo")
-			net.WriteString(mode.name or "hmcd")
+			net.WriteString(mode.name or "sandbox")
 			net.WriteInt(zb.ROUND_STATE, 4)
 		net.Send(ply)
 	end
@@ -391,7 +385,7 @@ function zb.WeightedChanceMode(modes_chances)
 		end
 	end
 
-	return "hmcd"
+	return "sandbox"
 end
 
 function zb.GetWorldSize()
@@ -580,7 +574,7 @@ function zb:RoundStart()
 	hg.UpdateRoundTime()
 
 	net.Start("RoundInfo")
-		net.WriteString(mode.name or "hmcd")
+		net.WriteString(mode.name or "sandbox")
 		net.WriteInt(zb.ROUND_STATE, 4)
 	net.Broadcast()
 
@@ -604,7 +598,7 @@ function zb:RoundStart()
 
 	print("Next game mode is " .. nextMode)
 
-	NextRound(forcemode ~= "random" and forcemode or (nextMode or "hmcd"))
+	NextRound("sandbox")
 
 	if CurrentRound().RoundStartPost then
 		CurrentRound():RoundStartPost()

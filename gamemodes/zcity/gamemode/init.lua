@@ -212,20 +212,17 @@ function GM:PlayerSpawn(ply)
     ply.viewmode = 3
     ply:UnSpectate()
     ply:SetMoveType(MOVETYPE_WALK)
+    ply:SetTeam(0)
+    ApplyAppearance(ply)
 
-    if ply.initialspawn then
-        ply:KillSilent()
-        ply:SetTeam(1001)
-        ply.initialspawn = nil
-        return
-    end
+    ply:SetSuppressPickupNotices(true)
+    ply.noSound = true
+    ply:Give("weapon_hands_sh")
+    ply:SetSuppressPickupNotices(false)
 
-    if CurrentRound() and not CurrentRound().OverrideSpawn then
-        ply:SetTeam(1001)
-        ApplyAppearance(ply,nil,nil,nil,true)
-        ply:SetTeam(zb:BalancedChoice(0, 1))
-    end
-
+    timer.Simple(0.1, function()
+        if IsValid(ply) then ply.noSound = false end
+    end)
 end
 
 function GM:PlayerDisconnected()
@@ -377,20 +374,6 @@ end
 hg.addbot = hg.addbot or false
 
 function GM:PlayerInitialSpawn(ply)
-	ply.initialspawn = true
-
-	if #player.GetAll() == 1 then
-		RunConsoleCommand("bot")
-		hg.addbot = true
-		zb:EndRound()
-	end
-
-	if #player.GetHumans() > 1 and hg.addbot then
-		for i,bot in pairs(player.GetListByName("bot")) do
-			RunConsoleCommand("kick",bot:Name())
-		end
-		hg.addbot = false
-	end
 end
 
 function GM:IsSpawnpointSuitable( pl, spawnpointent, bMakeSuitable )

@@ -153,7 +153,15 @@ function SWEP:SecondaryAttack()
 	end
 
 	ply.ZCFpvOwned = owned
+
+	if owned:GetOwner() ~= ply then
+		owned:SetOwner(ply)
+	end
+	if not owned:GetPowered() then
+		owned:SetPower(true)
+	end
 	if not owned:GetPowered() then return end
+
 	ZCFpv.StartControl(ply, owned)
 end
 

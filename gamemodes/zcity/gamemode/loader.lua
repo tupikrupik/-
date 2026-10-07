@@ -39,7 +39,7 @@ local function addModeHook( MODE, hookName, func )
 	zb.modesHooks[MODE.name][hookName] = func
 
 	hook.Add( hookName, "zb_modehook_" .. hookName, function( ... )
-		local Current = zb.CROUND_MAIN or zb.CROUND or "tdm"
+		local Current = zb.CROUND_MAIN or zb.CROUND or "sandbox"
 
 		local modeHooks = zb.modesHooks[Current]
 		if modeHooks and modeHooks[hookName] then

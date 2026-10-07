@@ -1,7 +1,7 @@
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 ENT.PrintName = "Saniya FPV Jammer"
-ENT.Author = "model: Shtormer, code: informal1337"
+ENT.Author = "Кустарное производство"
 ENT.Category = "ZCity FPV"
 ENT.Spawnable = true
 ENT.AdminOnly = false

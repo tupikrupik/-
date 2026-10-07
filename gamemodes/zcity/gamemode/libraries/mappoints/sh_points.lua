@@ -9,6 +9,14 @@ zb.Points.Spawnpoint = zb.Points.Spawnpoint or {}
 zb.Points.Spawnpoint.Color = Color(250,250,250)
 zb.Points.Spawnpoint.Name = "Spawnpoint"
 
+zb.Points.Team1 = zb.Points.Team1 or {}
+zb.Points.Team1.Color = Color(200, 60, 50)
+zb.Points.Team1.Name = "╨Ю╨║╨║╤Г╨┐╨░╨╜╤В╤Л"
+
+zb.Points.Team2 = zb.Points.Team2 or {}
+zb.Points.Team2.Color = Color(238, 255, 0)
+zb.Points.Team2.Name = "╨Ч╨░╤Й╨╕╤В╨╜╨╕╨║╨╕"
+
 zb.Points.RandomSpawns = zb.Points.RandomSpawns or {}
 zb.Points.RandomSpawns.Color = Color(122,122,0)
 zb.Points.RandomSpawns.Name = "RandomSpawns"

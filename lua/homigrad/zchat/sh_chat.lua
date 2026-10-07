@@ -77,15 +77,18 @@ if CLIENT then
 		chat.AddText(unpack(buffer))
 	end)
 
+	local function chatTimestamp()
+		return os.date("[%H:%M:%S]")
+	end
 	hook.Add("ChatText", "ZChat", function(index, name, text, messageType)
 		if (IsValid(hg.chat)) then
-			hg.chat:AddMessage(text)
+			hg.chat:AddMessage(Color(160, 160, 160), chatTimestamp() .. " ", text)
 		end
 	end)
 
 	function chat.AddText(...)
 		if (IsValid(hg.chat)) then
-			hg.chat:AddMessage(...)
+			hg.chat:AddMessage(Color(160, 160, 160), chatTimestamp() .. " ", ...)
 		end
 
 		-- log chat message to console
@@ -212,6 +215,46 @@ else
 	util.AddNetworkString("zChatMessage")
 	util.AddNetworkString("zChatGlobalMessage")
 	util.AddNetworkString("zChatTyping")
+
+	hook.Add("EntityTakeDamage", "ZChatKillConfirm", function(ent, dmgInfo)
+		local owner = ent
+
+		if IsValid(ent) and not ent:IsPlayer() then
+			owner = IsValid(ent.FakeOwner) and ent.FakeOwner or hg.RagdollOwner(ent)
+		end
+
+		if not IsValid(owner) or not owner:IsPlayer() then return end
+
+		local attacker = dmgInfo:GetAttacker()
+		if not IsValid(attacker) then return end
+
+		if not attacker:IsPlayer() then
+			local inf = dmgInfo:GetInflictor()
+			if IsValid(inf) and inf.ZCFpvDrone and IsValid(inf:GetOwner()) then
+				attacker = inf:GetOwner()
+			else
+				return
+			end
+		end
+
+		if attacker == owner then return end
+		owner.ZChatLastAttacker = attacker
+	end)
+
+	hook.Add("PlayerDeath", "ZChatKillConfirm", function(victim)
+		local attacker = victim.ZChatLastAttacker
+		if not IsValid(attacker) then return end
+		victim.ZChatLastAttacker = nil
+
+		timer.Simple(30, function()
+			if not IsValid(attacker) then return end
+
+			local text = "Подтверждено уничтожение живой силы противника (+25 000)"
+			net.Start("zChatGlobalMessage")
+				net.WriteTable({Color(90, 220, 120), text})
+			net.Send(attacker)
+		end)
+	end)
 
 	net.Receive("zChatMessage", function(len, ply)
 		local text = net.ReadString()

@@ -3,8 +3,22 @@
 
 	include("sh_teamselect.lua")
 
+	function ZCTeams.ApplyLook(ply)
+		local teamData = ZCTeams.Teams[ply.ZCTeamSelected]
+		if not teamData then return end
+
+		ply:SetModel(teamData.model)
+		ply:SetSkin(0)
+		ply:SetSubMaterial()
+		ply:SetBodyGroups(string.rep("0", 20))
+		ply:SetNetVar("Accessories", "")
+		ply:SetPlayerColor(teamData.color:ToVector())
+		ply:SetNWVector("PlayerColor", teamData.color:ToVector())
+		ply:SetNWString("PlayerName", teamData.name)
+	end
+
 	util.AddNetworkString("ZC_TeamSelect")
-	util.AddNetworkString("ZCTeamSelectOpen")
+	util.AddNetworkString("ZC_TeamSelectOpen")
 
 	local function GetTeamSpawn(teamId)
 		local pointGroup = "Team" .. teamId
@@ -33,10 +47,7 @@
 		end
 
 		ply:SetTeam(teamId)
-		ply:SetModel(teamData.model)
-		ply:SetPlayerColor(teamData.color:ToVector())
-		ply:SetNWVector("PlayerColor", teamData.color:ToVector())
-		ply:SetNWString("PlayerName", teamData.name)
+		ZCTeams.ApplyLook(ply)
 		ply:SetNWInt("ZCTeam", teamId)
 
 		net.Start("ZC_TeamSelect")
@@ -77,10 +88,7 @@
 		if not teamData then return end
 
 		ply:SetTeam(teamId)
-		ply:SetModel(teamData.model)
-		ply:SetPlayerColor(teamData.color:ToVector())
-		ply:SetNWVector("PlayerColor", teamData.color:ToVector())
-		ply:SetNWString("PlayerName", teamData.name)
+		ZCTeams.ApplyLook(ply)
 		ply:SetNWInt("ZCTeam", teamId)
 
 		local spawn, ang = GetTeamSpawn(teamId)
@@ -102,7 +110,7 @@
 		if text and string.lower(text) == "!team" then
 			txtTbl[1] = ""
 
-			net.Start("ZCTeamSelectOpen")
+			net.Start("ZC_TeamSelectOpen")
 				net.WriteBool(true)
 			net.Send(ply)
 		end

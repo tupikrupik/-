@@ -45,6 +45,10 @@ local function CheckAttachments(ply,tbl)
 end
 
 local function ForceApplyAppearance(ply, tbl, noModelChange)
+    if ply.ZCTeamSelected and ZCTeams and ZCTeams.ApplyLook then
+        ZCTeams.ApplyLook(ply)
+        return
+    end
     local tMdl = APmodule.PlayerModels[1][tbl.AModel] or APmodule.PlayerModels[2][tbl.AModel] or tbl.AModel
     local mdl = istable(tMdl) and tMdl.mdl or tMdl
     if mdl ~= ply:GetModel() and !noModelChange then

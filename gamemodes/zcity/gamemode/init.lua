@@ -297,8 +297,20 @@ hook.Add("SetupPlayerVisibility", "spectPVS", function(ply, viewent)
 	end
 end)
 
+local zb_delayed_respawn = CreateConVar("devsuck", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "Enable delayed respawn", 0, 1)
+
+cvars.AddChangeCallback("devsuck", function(_, _, new)
+	if tonumber(new) ~= 0 then return end
+
+	for _, ply in ipairs(player.GetAll()) do
+		timer.Remove("ZB_Respawn_" .. ply:SteamID64())
+		ply:SetNWFloat("ZB_RespawnTime", 0)
+	end
+end, "ZB_DelayedRespawn")
+
 hook.Add("PlayerDeathThink", "spectNetwork", function(ply)
 	if ply:Alive() then return end
+	if zb_delayed_respawn and zb_delayed_respawn:GetBool() and ply:GetNWFloat("ZB_RespawnTime", 0) > 0 then return end
 	//ply:Spectate(OBS_MODE_ROAMING)
 
 	local ent = ply.chosenSpectEntity or player.GetAll()[1]
@@ -345,10 +357,25 @@ hook.Add("PlayerDeathThink", "spectNetwork", function(ply)
 end)
 
 function GM:PlayerDeathThink(ply)
+	if zb_delayed_respawn:GetBool() and ply:GetNWFloat("ZB_RespawnTime", 0) > 0 then return false end
 	if not ply:CanSpawn() then return false end
 end
 
 function GM:PlayerDeath(ply)
+	if not zb_delayed_respawn:GetBool() then
+		ply:SetNWFloat("ZB_RespawnTime", 0)
+		return
+	end
+
+	local respawnTime = CurTime() + 60
+	ply:SetNWFloat("ZB_RespawnTime", respawnTime)
+
+	timer.Create("ZB_Respawn_" .. ply:SteamID64(), 60, 1, function()
+		if not IsValid(ply) or ply:Alive() then return end
+		ply:SetNWFloat("ZB_RespawnTime", 0)
+		ply:Spawn()
+	end)
+
 	ply.lastSpectTarget = nil
 	ply.chosenSpectEntity = nil
 	

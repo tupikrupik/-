@@ -145,9 +145,23 @@ function SWEP:SecondaryAttack()
 		owned = hit
 	else
 		owned = ply.ZCFpvOwned
+		if not ZCFpv.IsDrone(owned) or owned.Dead then
+			local best
+			local bestDist = math.huge
+			for _, ent in ipairs(ents.FindInSphere(ply:GetPos(), 500)) do
+				if ZCFpv.IsDrone(ent) and not ent.Dead and ent:GetOwner() == ply and not ent.CatapultMounted then
+					local dist = ply:GetPos():DistToSqr(ent:GetPos())
+					if dist < bestDist then
+						best = ent
+						bestDist = dist
+					end
+				end
+			end
+			owned = best
+		end
 		if not ZCFpv.IsDrone(owned) or owned.Dead then return end
 		local dir = (owned:GetPos() - ply:EyePos()):GetNormalized()
-		if ply:GetAimVector():Dot(dir) < 0.55 and ply:GetPos():Distance(owned:GetPos()) > 250 then
+		if ply:GetAimVector():Dot(dir) < 0.55 and ply:GetPos():Distance(owned:GetPos()) > 500 then
 			return
 		end
 	end

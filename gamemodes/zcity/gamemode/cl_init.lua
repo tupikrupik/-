@@ -102,6 +102,25 @@ local keydownattack
 local keydownattack2
 local keydownreload
 
+local function DrawDeathScreen()
+	local respawnTime = LocalPlayer():GetNWFloat("ZB_RespawnTime", 0)
+	if respawnTime <= 0 then return end
+
+	surface.SetDrawColor(0, 0, 0, 255)
+	surface.DrawRect(0, 0, ScrW(), ScrH())
+
+	surface.SetFont("HomigradFont")
+	surface.SetTextColor(255, 255, 255, 255)
+
+	local remaining = math.max(0, math.ceil(respawnTime - CurTime()))
+	local txt = tostring(remaining)
+	local w, h = surface.GetTextSize(txt)
+	surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() / 2 - h / 2)
+	surface.DrawText(txt)
+end
+
+hook.Add("HUDPaint","ZB_DeathScreen",DrawDeathScreen)
+
 hook.Add("HUDPaint","FUCKINGSAMENAMEUSEDINHOOKFUCKME",function()
     if LocalPlayer():Alive() then return end
 	local spect = LocalPlayer():GetNWEntity("spect")
@@ -122,6 +141,9 @@ end)
 
 hook.Add("HG_CalcView", "zzzzzzzUwU", function(ply, pos, angles, fov)
 	if not lply:Alive() then
+		if lply:GetNWFloat("ZB_RespawnTime", 0) > 0 then
+			return {origin = lply:EyePos(), angles = lply:EyeAngles(), fov = fov}
+		end
 		if lply:KeyDown(IN_ATTACK) then
 			if not keydownattack then
 				keydownattack = true
